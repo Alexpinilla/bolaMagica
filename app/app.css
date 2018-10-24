@@ -1,0 +1,37 @@
+*{
+  color: rgb(152, 252, 255);
+  background: black;
+}
+
+.contenedor {
+  display:flex;
+  max-width: 978px;
+  border: 1px solid;
+  color: rgb(152, 252, 255);
+  padding: 10px;
+  background-color: rgb(0, 0, 0);
+  border-radius:5px;
+  margin: 0 auto;
+  margin-top: 10px;
+  flex-direction: column
+}
+p {
+  text-align:center;
+}
+button {
+  display:flex;
+  margin: 0 auto;
+}
+
+.invisible {
+  display:none;
+}
+input {
+  max-width: 200px;
+ display: flex;
+ margin: 0 auto;
+}
+img {
+  display: flex;
+  margin: 0 auto;
+}

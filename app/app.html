@@ -1,0 +1,17 @@
+<div class="contenedor">
+    <p class="parrafo">Introduce tu pregunta:</p>
+    <input type="text" ng-model="fraseIntroducida" />
+    <br>
+    <div>
+        <img ng-click="$ctrl.mostrarFrase(fraseIntroducida)" src="./images/bola.png"/><br><br>
+        Respuesta de la bola mágica:<br> {{$ctrl.bolaMagica[$ctrl.frase]}}
+    </div>
+</div>
+<div class="contenedor">
+    <h4>LOG</h4>
+    <br>
+    <hr>
+    <div ng-repeat="item in $ctrl.log">
+        {{item}}
+    </div>
+</div>

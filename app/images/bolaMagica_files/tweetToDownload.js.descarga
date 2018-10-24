@@ -1,0 +1,161 @@
+/* 
+
+	Title:		jQuery Tweet to Download
+	Version:	1.0.jQ
+	Created By: Tyler Colwell
+	Website:    http://tyler.tc/
+	
+	Copyright © 2010-2012 Tyler Colwell
+		- ALL RIGHTS RESERVED
+		- NO NOT DISTRIBUTE / BUNDLE
+		- NOT FOR RESALE
+	
+*/
+
+/*-----------------------------------------------------------------------------------*/
+/*	Start Plugin
+/*-----------------------------------------------------------------------------------*/
+
+(function($){
+
+	$.fn.tcTweetdl = function(options){
+	
+/*-----------------------------------------------------------------------------------*/
+/*	Set Defaults
+/*-----------------------------------------------------------------------------------*/
+
+			var defaults = {
+				// Configure Twitter
+				buttons: 'follow',
+				require_both: false,
+				makeCookie: true,
+				username: 'TylerColwell7',
+				counter: 'horizontal',
+				tweet_url: 'http://tyler.tc',
+				tweet_text: '',
+				button_size: 'medium',
+				message: 'Tweet about us or give us a Follow to start your download!',
+				dl: 'http://tyler.tc/'				
+			};
+			
+			// Caching
+			var options = $.extend(defaults, options);
+			var thisLocker = $(this);
+			var thisId = thisLocker.attr('id');
+			var tweet_cookie = tctdl_readCookie('ltd_'+thisId+'_tweet');
+			var follow_cookie = tctdl_readCookie('ltd_'+thisId+'_follow');
+			var buttons = '';
+			var unlocked = false;
+
+			// Lock or Give Link?
+			if(defaults.buttons == 'both'){
+				if(defaults.require_both == true){ // Check for both
+					if(tweet_cookie == 'true' && follow_cookie == 'true'){
+						buttons = '<div class="tweet-dl-message">Thanks for Sharing!</div><div class="tweet-dl-buttons">You already unlocked this download, here is your <a href="'+defaults.dl+'" target="_blank">download link.</a>';
+						unlocked = true;
+					}
+				} else {
+					if(tweet_cookie == 'true' || follow_cookie == 'true'){
+						buttons = '<div class="tweet-dl-message">Thanks for Sharing!</div><div class="tweet-dl-buttons">You already unlocked this download, here is your <a href="'+defaults.dl+'" target="_blank">download link.</a>';
+						unlocked = true;
+					}
+				}
+			}
+			
+			// Check Tweet buttons
+			if(defaults.buttons == 'tweet' && tweet_cookie == 'true'){
+					buttons = '<div class="tweet-dl-message">Thanks for Tweeting!</div><div class="tweet-dl-buttons">You already unlocked this download, here is your <a href="'+defaults.dl+'" target="_blank">download link.</a>';
+					unlocked = true;
+			}
+			
+			// Check Follow Buttons
+			if(defaults.buttons == 'follow' && follow_cookie == 'true'){
+					buttons = '<div class="tweet-dl-message">Thanks for Following!</div><div class="tweet-dl-buttons">You already unlocked this download, here is your <a href="'+defaults.dl+'" target="_blank">download link.</a>';
+					unlocked = true;
+			}
+			
+			// run locker
+			if(unlocked != true){
+				// Start Makup
+				var buttons = '<div class="tweet-dl-message">'+defaults.message+'</div><div class="tweet-dl-buttons">';
+				// Buildout Buttons
+				if(defaults.buttons == 'follow'){
+					buttons = buttons + '<a href="http://twitter.com/'+defaults.username+'" data-size="'+defaults.button_size+'" class="twitter-follow-button" data-show-count="'+defaults.counter+'">Follow @'+defaults.username+'</a>';
+				} else if( defaults.buttons == 'tweet' ){
+					buttons = buttons + '<a href="https://twitter.com/share" data-size="'+defaults.button_size+'" class="twitter-share-button" data-count="'+defaults.counter+'" data-url="'+defaults.tweet_url+'" data-text="'+defaults.tweet_text+'">Tweet</a>';
+				} else if( defaults.buttons == 'both' ){
+					buttons = buttons + '<a href="https://twitter.com/share" class="twitter-share-button" data-size="'+defaults.button_size+'" data-count="'+defaults.counter+'" data-url="'+defaults.tweet_url+'" data-text="'+defaults.tweet_text+'">Tweet</a><a href="http://twitter.com/'+defaults.username+'" class="twitter-follow-button" data-size="'+defaults.button_size+'" data-show-count="'+defaults.counter+'">Follow @'+defaults.username+'</a>';
+				} buttons = buttons + '</div>';
+			}
+
+			// Add markup to page	
+			thisLocker.append(buttons);
+			
+/*-----------------------------------------------------------------------------------*/
+/*	Cookie Functions
+/*-----------------------------------------------------------------------------------*/
+			
+			function tctdl_createCookie(name,value,days){if(days){var date=new Date();date.setTime(date.getTime()+(days*24*60*60*1000));var expires="; expires="+date.toGMTString();} else var expires="";document.cookie=name+"="+value+expires+"; path=/";} function tctdl_readCookie(name){var nameEQ=name+"=";var ca=document.cookie.split(';');for(var i=0;i<ca.length;i++){var c=ca[i];while(c.charAt(0)==' ')c=c.substring(1,c.length);if(c.indexOf(nameEQ)==0)return c.substring(nameEQ.length,c.length);} return null;}		
+				
+/*-----------------------------------------------------------------------------------*/
+/*	Create Callback
+/*-----------------------------------------------------------------------------------*/
+
+			function tc_dl_tracker(intent_event){
+			
+				// Cache our vars
+				var user = intent_event.data.screen_name;
+				var type = intent_event.type;
+				var node = intent_event.target.parentNode;
+				var node_id = jQuery(node).parent('div.tweet-dl').attr('id');
+				var download = defaults.dl;
+				var requireBoth = defaults.require_both;
+				var completed = false;
+				
+				// Check Type
+				if(type == 'tweet' && download != ''){
+					
+					// Bake some cookies?
+					tctdl_createCookie('ltd_'+node_id+'_tweet', 'true', 365);
+					
+					// Decide how to download
+					if(requireBoth == true){
+						if(tctdl_readCookie('ltd_'+node_id+'_tweet') == true && tctdl_readCookie('ltd_'+node_id+'_follow') == true){
+							setTimeout(window.location = download, 1100);
+						}
+					} else {
+						setTimeout(window.location = download, 1100);
+					}
+					
+				} else if(type == 'follow' && download != ''){
+					
+					// Bake some cookies?
+					tctdl_createCookie('ltd_'+node_id+'_follow', 'true', 365);
+					
+					// Decide how to download
+					if(requireBoth == true){
+						if(tctdl_readCookie('ltd_'+node_id+'_tweet') == true && tctdl_readCookie('ltd_'+node_id+'_follow') == true){
+							setTimeout(window.location = download, 1100);
+						}
+					} else {
+						setTimeout(window.location = download, 1100);
+					}
+					
+				} // end type check
+						
+			} // end callback
+				
+/*-----------------------------------------------------------------------------------*/
+/*	Bootstrap
+/*-----------------------------------------------------------------------------------*/
+
+			twttr.events.bind('tweet',	tc_dl_tracker);
+			twttr.events.bind('follow',	tc_dl_tracker);
+			
+/*-----------------------------------------------------------------------------------*/
+/*	Shows' Over!
+/*-----------------------------------------------------------------------------------*/
+	
+	}; // End Main Function
+
+})(jQuery); // End Plugin
